@@ -1,9 +1,9 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Lanyah M "added the meta element"-->
-
     <title>Product Management Web Page</title>
     <!-- Dayon M "Updated HTML title" -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -13,12 +13,11 @@
 <div class="container">
     <h1 class="text-center my-4">Web Storefront Product Management Web Page</h1>
     <!-- Dayon M "Updated main heading text" -->
-    
-    <form id="productForm" class="bg-danger p-4 rounded">
 
+
+    <form id="productForm" class="bg-danger p-4 rounded">
         <div class="form-group">
             <div id="productNameMessage" class="text-white"></div>
-            <div class="invalid-feedback">Product name is required and can only contain letters and spaces.</div>
             <label for="productName">Product Name:</label>
             <input type="text" id="productName" name="productName" class="form-control" required oninput="handleText('productName', 'productNameMessage')">
         </div>
@@ -31,7 +30,6 @@
 
         <div class="form-group">
             <div id="priceMessage" class="text-white"></div>
-            <div class="invalid-feedback">Price must be a valid number.</div>
             <label for="price">Price ($):</label>
             <input type="number" step="0.01" id="price" name="price" class="form-control" required oninput="handleText('price', 'priceMessage')">
         </div>
@@ -48,19 +46,51 @@
             <textarea id="description" name="description" class="form-control" required oninput="handleText('description', 'descriptionMessage')"></textarea>
         </div>
 
-        <!-- Lanyah M "added class & div to html elements for bootstrap "-->
-        <button type="submit">Submit</button>
+        <button type="submit" class="btn btn-light">Submit</button>
     </form>
+    <!-- Lanyah M "added class & div to html elements for bootstrap "-->
     <div id="jsonOutput" class="mt-4"></div>
+
+
+    <div class="form-group mt-5">
+        <h2>Search Product</h2>
+        <label for="searchProductName">Product Name:</label>
+        <input type="text" id="searchProductName" class="form-control">
+        <button type="button" class="btn btn-secondary mt-2" id="searchProduct">Search</button>
+    </div>
+
+
+    <h2>Product Details</h2>
+    <h3>JSON</h3>
+    <div id="productDetails">
+        <pre id="jsonDetailsOutput" style="color: black;">
+
+        </pre>
+    </div>
+
+
+    <button type="button" class="btn btn-success btn-block mt-4" id="updateProduct">Update</button>
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Lanyah M "added script tag for CDN" -->
 
 <script>
+    const ProductDocument = [ // Dayon M "Changed from Products to ProductDocument"
+        {
+            "productName": "Sample Product",
+            "category": "Sample Category",
+            "price": 19.99,
+            "sku": "SP123",
+            "description": "This is a sample product."
+        }
+    ];
+
+    const jsonOutput = document.getElementById('jsonOutput');
+
     function handleText(field, messageDisplay) {
         const valueInserted = document.getElementById(field).value;
-
         removeMessage(messageDisplay);
 
         if (field === 'productName') {
@@ -90,20 +120,8 @@
         document.getElementById(messageDisplay).innerText = "";
     }
     <!-- Lanyah M "added JavaScript, and included some regex to handle what can be inputted by a user" -->
-</script>
-
-<script>
     //<---Ali Almalky--->
 
-    const ProductDocument = [ // Dayon M "Changed from Products to ProductDocument"
-        {
-            "productName": "Sample Product",
-            "category": "Sample Category",
-            "price": 19.99,
-            "sku": "SP123",
-            "description": "This is a sample product."
-        }
-    ];
 
     document.getElementById('productForm').addEventListener('submit', function (e) {
         e.preventDefault();
@@ -118,23 +136,51 @@
 
         let productDocument = JSON.parse(localStorage.getItem('productDocument')) || []; // Dayon M "Changed products to productDocument"
         productDocument.push(newProduct);
-
         localStorage.setItem('productDocument', JSON.stringify(productDocument)); // Dayon M "Changed products to productDocument"
 
+
         alert('Product added successfully!');
-
-        const jsonOutput = document.getElementById('jsonOutput');
         jsonOutput.innerHTML = `<pre style="color: white;">${JSON.stringify(newProduct, null, 2)}</pre>`;
+    });
 
-        function fetchProductDocument() { // Dayon M "Changed fetchProducts to fetchProductDocument"
-            const productDocument = JSON.parse(localStorage.getItem('productDocument')) || []; // Dayon M "Changed products to productDocument"
-            console.log('All Products:', productDocument); // Dayon M "Changed products to productDocument"
-            return productDocument;
+    function fetchProductDocument() { // Dayon M "Changed fetchProducts to fetchProductDocument"
+        const productDocument = JSON.parse(localStorage.getItem('productDocument')) || []; // Dayon M "Changed products to productDocument"
+        console.log('All Products:', productDocument); // Dayon M "Changed products to productDocument"
+        return productDocument;
+    }
+
+
+    $('#searchProduct').click(function() {
+        const searchName = $('#searchProductName').val().trim();
+        const productDocument = fetchProductDocument();
+        const product = productDocument.find(p => p.productName === searchName);
+        if (product) {
+            $('#jsonDetailsOutput').html(JSON.stringify(product, null, 2)).css('color', 'white');
+        } else {
+            $('#jsonDetailsOutput').html('Product not found').css('color', 'red');
         }
     });
 
-    //<---Ali Almalky--->
+    $('#updateProduct').click(function() {
+        const searchName = $('#searchProductName').val().trim();
+        const productDocument = fetchProductDocument();
+        const product = productDocument.find(p => p.productName === searchName);
+        if (product) {
+            product.category = $('#category').val();
+            product.price = parseFloat($('#price').val());
+            product.sku = $('#sku').val();
+            product.description = $('#description').val();
 
+            localStorage.setItem('productDocument', JSON.stringify(productDocument));
+
+            alert('Product updated successfully!');
+            $('#jsonDetailsOutput').html(JSON.stringify(product, null, 2)).css('color', 'white');
+        } else {
+            alert('Product can not be found.');
+        }
+    });
+    //<---Lanyah Moody--->
+    //<---Ali Almalky--->
 </script>
 
 <style>
@@ -145,37 +191,28 @@
         font-family: Arial, sans-serif;
     }
 
-    h1 {
+    h1, h2, h3 {
         color: white;
     }
 
-    form {
+    .form-group label {
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: gray;
+        border: none;
+        color: white;
+    }
+
+    .btn-success {
         background-color: red;
-        padding: 20px;
-        border-radius: 5px;
-    }
-
-    label {
-        display: block;
-        margin-top: 10px;
-    }
-
-    input, textarea {
-        width: 100%;
-        padding: 5px;
-    }
-
-    button {
-        margin-top: 20px;
-        padding: 10px;
-        background-color: black;
         color: white;
         border: none;
-        cursor: pointer;
     }
 
-    button:hover {
-        background-color: blue;
+    .btn-success:hover {
+        background-color: darkred;
     }
 </style>
 <!-- Dayon M "Updated CSS" -->
