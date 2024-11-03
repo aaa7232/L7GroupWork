@@ -4,14 +4,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Lanyah M "added the meta element"-->
 
-    <title>G1 Product Page</title>
-    <!-- Dayon M "Updated HTML" -->
+    <title>Product Management Web Page</title>
+    <!-- Dayon M "Updated HTML title" -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Lanyah M "Bootstrap link"-->
 </head>
 <body class="bg-dark text-white">
 <div class="container">
-    <h1 class="text-center my-4">Product Information Management</h1>
+    <h1 class="text-center my-4">Web Storefront Product Management Web Page</h1>
+    <!-- Dayon M "Updated main heading text" -->
+    
     <form id="productForm" class="bg-danger p-4 rounded">
 
         <div class="form-group">
@@ -92,7 +94,8 @@
 
 <script>
     //<---Ali Almalky--->
-    const Products = [
+
+    const ProductDocument = [ // Dayon M "Changed from Products to ProductDocument"
         {
             "productName": "Sample Product",
             "category": "Sample Category",
@@ -113,24 +116,25 @@
             description: document.getElementById('description').value
         };
 
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        products.push(newProduct);
+        let productDocument = JSON.parse(localStorage.getItem('productDocument')) || []; // Dayon M "Changed products to productDocument"
+        productDocument.push(newProduct);
 
-        localStorage.setItem('products', JSON.stringify(products));
+        localStorage.setItem('productDocument', JSON.stringify(productDocument)); // Dayon M "Changed products to productDocument"
 
         alert('Product added successfully!');
 
         const jsonOutput = document.getElementById('jsonOutput');
         jsonOutput.innerHTML = `<pre style="color: white;">${JSON.stringify(newProduct, null, 2)}</pre>`;
 
-        function fetchProducts() {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
-            console.log('All Products:', products);
-            return products;
+        function fetchProductDocument() { // Dayon M "Changed fetchProducts to fetchProductDocument"
+            const productDocument = JSON.parse(localStorage.getItem('productDocument')) || []; // Dayon M "Changed products to productDocument"
+            console.log('All Products:', productDocument); // Dayon M "Changed products to productDocument"
+            return productDocument;
         }
     });
 
-    //<---Ali--->
+    //<---Ali Almalky--->
+
 </script>
 
 <style>
@@ -138,7 +142,7 @@
     body {
         background-color: black;
         color: white;
-        font-family: Arial,sans-serif;
+        font-family: Arial, sans-serif;
     }
 
     h1 {
@@ -174,6 +178,6 @@
         background-color: blue;
     }
 </style>
-<!-- Dayon M "Updated CSS"-->
+<!-- Dayon M "Updated CSS" -->
 </body>
 </html>
